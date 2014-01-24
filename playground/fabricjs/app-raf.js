@@ -47,8 +47,9 @@ $(function(){
         iteration += .5;
       }
       else {
-        cancelAnimationFrame(raf);
-        return false;
+        iteration = 0;
+        // cancelAnimationFrame(raf);
+        // return false;
       }
 
       raf = requestAnimationFrame(enterFrame);
@@ -77,9 +78,9 @@ $(function(){
   };
 
   //Animate boxes
-  canvas.on('mouse:down', function(options){
+  // canvas.on('mouse:down', function(options){
     animate();
-  });
+  // });
 });
 
 
