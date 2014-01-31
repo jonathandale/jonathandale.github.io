@@ -1,42 +1,66 @@
 $(function(){
+  var docWidth = $(document).width(),
+      docHeight = $(document).height(),
+      cols = 1,
+      rows = 12,
+      padding = Math.round(docHeight * 0.25),
+      gutter = 5,
+      boxW = Math.round((docWidth - ((padding * 2) + (cols-1) * gutter))/cols),
+      boxH = Math.round((docHeight - ((padding * 2) + (rows-1) * gutter))/rows),
+      canvas, animate;
 
-  var canvas = new fabric.Canvas('c'),
-      cols = 4,
-      yOffset = 100,
-      animateObject;
+  $('#c').attr({
+    'height': docHeight+'px',
+    'width': docWidth+'px'
+  });
 
-  animateObject = function(obj){
-    obj.animate('angle', '+=360', {
-      onChange: canvas.renderAll.bind(canvas),
-      duration: 2000,
-      easing: fabric.util.ease.easeInOutCirc
-    });
+  canvas = new fabric.Canvas('c');
+  canvas.setBackgroundColor('#ffffff');
+
+
+  animate = function(){
+    var go,
+        boxes = canvas.getObjects(),
+        total = boxes.length;
+
+    go = function(){
+      $.each(boxes, function(i, box){
+        setTimeout(function(){
+          //animate
+          box.animate('angle', '+=180', {
+            easing: fabric.util.ease.easeInOutExpo,
+            duration: 4000,
+            onChange: canvas.renderAll.bind(canvas),
+            onComplete: function(){
+              if(i+1 === total) go();
+            }
+          });
+        }, (100 + i*50));
+      });
+    };
+
+    go();
   };
 
-  //fabric test
-  for (var i = 1; i <= 1; i++) {
-    var circle = new fabric.Rect({
-      left: ((i-1)%cols === 0) ? 101 : (i-((Math.floor((i-1)/cols)))*cols) * 101,
-      top: yOffset + (Math.floor((i-1)/cols) * 101),
-      width: 100,
-      height: 100,
-      // radius: 20,
+  //Make some boxes
+  for (var i = 1; i <= (cols*rows); i++) {
+    var box = new fabric.Rect({
+      left: ((i-1)%cols === 0) ? padding + (boxW/2) : padding + (boxW/2) + ((i-1) - (Math.floor((i-1)/cols) * cols)) * (boxW + gutter),
+      top: padding + (boxH/2) + Math.floor((i-1)/cols) * (boxH+gutter),
+      width: boxW,
+      height: boxH,
       fill: 'black',
       opacity: 0.75,
       hasControls: false,
       selectable: false,
       originX: 'center',
-      originY: 'center'
+      originY: 'center',
+      angle: 0
     });
 
-    canvas.add(circle);
-
-    animateObject(circle);
+    canvas.add(box);
   };
 
-  setInterval(function(){
-    $.each(canvas.getObjects(), function(i, obj){
-      animateObject(obj);
-    });
-  }, 2200);
+  //Animate boxes
+  animate();
 });
