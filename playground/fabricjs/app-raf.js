@@ -37,7 +37,7 @@ $(function(){
 
     enterFrame = function(){
       $.each(boxes, function(i, box){
-        var newAngle = easing.easeInOutExpo(iteration - (i*delay), 0, 360, totalIterations);
+        var newAngle = easing.easeInOutExpo(iteration - (i*delay), 0, 180, totalIterations);
         box.set('angle', newAngle);
       });
 

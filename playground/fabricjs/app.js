@@ -29,7 +29,7 @@ $(function(){
           //animate
           box.animate('angle', '+=180', {
             easing: fabric.util.ease.easeInOutExpo,
-            duration: 4000,
+            duration: 2500,
             onChange: canvas.renderAll.bind(canvas),
             onComplete: function(){
               if(i+1 === total) go();
