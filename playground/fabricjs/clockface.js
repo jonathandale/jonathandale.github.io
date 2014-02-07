@@ -5,7 +5,9 @@ $(function(){
       radius = Math.round(shortest - Math.round(shortest * 0.25)),
       arcs = [],
       segments = 12,
-      easing, canvas , animate;
+      delay = 2,
+      totalIterations = 80,
+      easing, canvas, animate;
 
   //Set up the canvas
   $('#clockface').attr({
@@ -101,22 +103,28 @@ $(function(){
     canvas.add(this.arc);
   };
 
-  Arc.prototype.animate = function() {
+  Arc.prototype.animate = function(iteration) {
     var arc = this,
-        enterFrame,
-        iteration = 0,
-        totalIterations = 80,
-        delay = 2,
         from = this.minRadius,
         to = this.maxRadius,
         idx = this.idx,
+        delayedIteration = iteration - (delay * idx),
+        newAngle = Math.round(easing.easeOutExpo(delayedIteration > 0 ? delayedIteration : 0, from, to, totalIterations));
+
+      arc.render(newAngle);
+  };
+
+  function animate(){
+    var enterFrame,
+        iteration = 0,
         raf;
 
     enterFrame = function(){
-      var delayedIteration = iteration - (delay * idx),
-          newAngle = Math.round(easing.easeOutExpo(delayedIteration > 0 ? delayedIteration : 0, from, to, totalIterations));
+      //Do anim on each arc
+      $.each(arcs, function(i, arc){
+        arc.animate(iteration);
+      });
 
-      arc.render(newAngle);
       canvas.renderAll();
 
       if(iteration - (segments*delay) < totalIterations) {
@@ -131,8 +139,7 @@ $(function(){
     };
 
     enterFrame();
-  };
-
+  }
 
   //Generate clock arcs
   for (var i = 0; i < segments; i++) {
@@ -141,9 +148,7 @@ $(function(){
 
   //Animate arcs
   canvas.on('mouse:down', function(options){
-    $.each(arcs, function(i, arc){
-      arc.animate();
-    });
+    animate();
   });
 
 });
